@@ -1,29 +1,47 @@
 package com.app.rastreadorfinanceiro.repository
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import com.app.rastreadorfinanceiro.data.CategoryDao
+import com.app.rastreadorfinanceiro.data.CategoryEntity
 import com.app.rastreadorfinanceiro.model.CategoryModel
 
-class CategoryRepository : BaseRepository<CategoryModel>() {
-    private val storage: MutableList<CategoryModel> = mutableListOf()
+class CategoryRepository(private val dao: CategoryDao) {
 
-    fun fetchCategories(): List<CategoryModel> = storage.toList()
-
-    fun addCategory(category: CategoryModel) {
-        storage.add(category)
+    // Busca do banco e converte para o modelo da tela
+    suspend fun fetchCategories(): List<CategoryModel> {
+        val entities = dao.getAll()
+        return entities.map { entity ->
+            CategoryModel(
+                id = entity.id,
+                name = entity.name,
+                color = Color(entity.colorArgb) // Converte Int -> Color
+            )
+        }
     }
 
-    fun removeCategory(category: CategoryModel) {
-        storage.removeIf { it.id == category.id }
+    // Converte o modelo da tela para entidade do banco e salva
+    suspend fun addCategory(category: CategoryModel) {
+        val entity = CategoryEntity(
+            id = category.id,
+            name = category.name,
+            colorArgb = category.color.toArgb() // Converte Color -> Int
+        )
+        dao.insert(entity)
     }
 
-    fun updateCategory(category: CategoryModel) {
-        val idx = storage.indexOfFirst { it.id == category.id }
-        if (idx >= 0) storage[idx] = category
+    suspend fun removeCategory(category: CategoryModel) {
+        val entity = CategoryEntity(
+            id = category.id,
+            name = category.name,
+            colorArgb = category.color.toArgb()
+        )
+        dao.delete(entity)
     }
 
-    override fun save(data: List<CategoryModel>) {
-        storage.clear()
-        storage.addAll(data)
+    suspend fun updateCategory(category: CategoryModel) {
+        // Como configuramos o DAO com OnConflictStrategy.REPLACE,
+        // basta inserir novamente com o mesmo ID que ele atualiza.
+        addCategory(category)
     }
-
-    override fun load(): List<CategoryModel> = storage.toList()
 }

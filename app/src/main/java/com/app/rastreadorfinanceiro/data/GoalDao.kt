@@ -7,13 +7,14 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
-interface CategoryDao {
-    @Query("SELECT * FROM categories")
-    suspend fun getAll(): List<CategoryEntity> 
+interface GoalDao {
+    // SE O SEU ESTIVER SEM ": List<GoalEntity>", O ERRO ACONTECE!
+    @Query("SELECT * FROM goals")
+    suspend fun getAll(): List<GoalEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(category: CategoryEntity)
+    suspend fun insert(goal: GoalEntity)
 
     @Delete
-    suspend fun delete(category: CategoryEntity)
+    suspend fun delete(goal: GoalEntity)
 }

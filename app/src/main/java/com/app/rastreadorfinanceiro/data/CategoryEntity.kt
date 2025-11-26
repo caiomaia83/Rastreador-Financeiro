@@ -1,6 +1,11 @@
+package com.app.rastreadorfinanceiro.data
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
 @Entity(tableName = "categories")
-data class CategoryModel(
+data class CategoryEntity(
     @PrimaryKey val id: String,
     val name: String,
-    val color: Color // O Converter cuidará disso
+    val colorArgb: Int
 )

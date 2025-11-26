@@ -2,48 +2,67 @@ package com.app.rastreadorfinanceiro.viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.app.rastreadorfinanceiro.model.GoalModel
-import com.app.rastreadorfinanceiro.model.CategoryModel
 import com.app.rastreadorfinanceiro.repository.GoalsRepository
 import com.app.rastreadorfinanceiro.service.GoalsService
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import java.util.UUID
 
 class GoalsViewModel(
-    private val repo: GoalsRepository = GoalsRepository(),
-    private val service: GoalsService = GoalsService(repo)
+    private val repo: GoalsRepository
 ) : ViewModel() {
+
+    private val service = GoalsService(repo)
 
     private val _goals = mutableStateListOf<GoalModel>()
     val goals: List<GoalModel> get() = _goals
 
+    // 1. Criamos um Estado para guardar o balanço (Map de Categoria -> Valor)
+    private val _balanceByCategory = MutableStateFlow<Map<String, Double>>(emptyMap())
+    val balanceByCategory: StateFlow<Map<String, Double>> = _balanceByCategory.asStateFlow()
+
     init {
-        _goals.clear()
-        _goals.addAll(repo.fetchGoals())
+        refresh()
     }
 
     fun refresh() {
-        _goals.clear()
-        _goals.addAll(repo.fetchGoals())
+        viewModelScope.launch {
+            // Carrega a lista de metas
+            val fetchedGoals = repo.fetchGoals()
+            _goals.clear()
+            _goals.addAll(fetchedGoals)
+
+            // 2. Agora chamamos a função suspend DENTRO da coroutine e atualizamos o estado
+            _balanceByCategory.value = service.balanceByCategory()
+        }
     }
 
     fun addGoal(categoryId: String, amount: Double) {
         val goal = GoalModel(UUID.randomUUID().toString(), categoryId, amount)
-        repo.addGoal(goal)
-        _goals.add(goal)
+        viewModelScope.launch {
+            repo.addGoal(goal)
+            refresh()
+        }
     }
 
     fun removeGoal(goal: GoalModel) {
-        repo.removeGoal(goal)
-        _goals.removeIf { it.id == goal.id }
+        viewModelScope.launch {
+            repo.removeGoal(goal)
+            refresh()
+        }
     }
 
     fun updateGoal(goal: GoalModel) {
-        repo.updateGoal(goal)
-        val idx = _goals.indexOfFirst { it.id == goal.id }
-        if (idx >= 0) _goals[idx] = goal
+        viewModelScope.launch {
+            repo.updateGoal(goal)
+            refresh()
+        }
     }
 
+    // Esta função continua normal pois trabalha apenas com a lista em memória (_goals)
     fun sumTotalGoals(): Double = service.sumTotalGoals(_goals)
-
-    fun balanceByCategory(): Map<String, Double> = service.balanceByCategory()
 }

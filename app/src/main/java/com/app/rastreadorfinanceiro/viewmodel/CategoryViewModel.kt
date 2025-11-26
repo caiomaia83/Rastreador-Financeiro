@@ -2,41 +2,49 @@ package com.app.rastreadorfinanceiro.viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.app.rastreadorfinanceiro.model.CategoryModel
 import com.app.rastreadorfinanceiro.repository.CategoryRepository
+import kotlinx.coroutines.launch
 import java.util.UUID
 
 class CategoryViewModel(
-    private val repo: CategoryRepository = CategoryRepository()
+    private val repo: CategoryRepository
 ) : ViewModel() {
 
     private val _categories = mutableStateListOf<CategoryModel>()
     val categories: List<CategoryModel> get() = _categories
 
     init {
-        _categories.clear()
-        _categories.addAll(repo.fetchCategories())
+        refresh()
     }
 
     fun refresh() {
-        _categories.clear()
-        _categories.addAll(repo.fetchCategories())
+        viewModelScope.launch {
+            _categories.clear()
+            _categories.addAll(repo.fetchCategories())
+        }
     }
 
     fun addCategory(name: String, color: androidx.compose.ui.graphics.Color) {
         val category = CategoryModel(UUID.randomUUID().toString(), name, color)
-        repo.addCategory(category)
-        _categories.add(category)
+        viewModelScope.launch {
+            repo.addCategory(category)
+            refresh()
+        }
     }
 
     fun removeCategory(category: CategoryModel) {
-        repo.removeCategory(category)
-        _categories.removeIf { it.id == category.id }
+        viewModelScope.launch {
+            repo.removeCategory(category)
+            refresh()
+        }
     }
 
     fun updateCategory(category: CategoryModel) {
-        repo.updateCategory(category)
-        val idx = _categories.indexOfFirst { it.id == category.id }
-        if (idx >= 0) _categories[idx] = category
+        viewModelScope.launch {
+            repo.updateCategory(category)
+            refresh()
+        }
     }
 }

@@ -2,60 +2,82 @@ package com.app.rastreadorfinanceiro.viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.app.rastreadorfinanceiro.model.CategoryModel
 import com.app.rastreadorfinanceiro.model.ExpenseModel
 import com.app.rastreadorfinanceiro.model.IncomeModel
 import com.app.rastreadorfinanceiro.model.TransactionModel
 import com.app.rastreadorfinanceiro.repository.TransactionRepository
 import com.app.rastreadorfinanceiro.service.TransactionService
+import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.util.UUID
 
 class TransactionViewModel(
-    private val repo: TransactionRepository = TransactionRepository(),
-    private val service: TransactionService = TransactionService(repo)
+    private val repo: TransactionRepository
 ) : ViewModel() {
+
+    private val service = TransactionService(repo)
 
     private val _transactions = mutableStateListOf<TransactionModel>()
     val transactions: List<TransactionModel> get() = _transactions
 
     init {
-        _transactions.clear()
-        _transactions.addAll(repo.fetchTransactions())
+        refresh()
     }
 
     fun refresh() {
-        _transactions.clear()
-        _transactions.addAll(repo.fetchTransactions())
+        viewModelScope.launch {
+            val fetched = repo.fetchTransactions()
+            _transactions.clear()
+            _transactions.addAll(fetched)
+        }
     }
 
     fun addIncome(amount: Double, description: String, date: LocalDateTime = LocalDateTime.now()) {
         val safeAmount = if (amount < 0) kotlin.math.abs(amount) else amount
         val income = IncomeModel(UUID.randomUUID().toString(), safeAmount, date, description)
-        repo.addIncome(income)
-        _transactions.add(income)
+
+        viewModelScope.launch {
+            repo.addIncome(income)
+            refresh()
+        }
     }
 
     fun addExpense(amount: Double, description: String, category: CategoryModel, date: LocalDateTime = LocalDateTime.now()) {
         val expense = ExpenseModel(UUID.randomUUID().toString(), amount, date, description, category)
-        repo.addExpense(expense)
-        _transactions.add(expense)
+
+        viewModelScope.launch {
+            repo.addExpense(expense)
+            refresh()
+        }
     }
 
     fun removeTransaction(transaction: TransactionModel) {
-        repo.removeTransaction(transaction)
-        _transactions.removeIf { it.id == transaction.id }
+        viewModelScope.launch {
+            repo.removeTransaction(transaction)
+            refresh()
+        }
     }
 
     fun updateTransaction(transaction: TransactionModel) {
-        repo.updateTransaction(transaction)
-        val idx = _transactions.indexOfFirst { it.id == transaction.id }
-        if (idx >= 0) _transactions[idx] = transaction
+        viewModelScope.launch {
+            repo.updateTransaction(transaction)
+            refresh()
+        }
     }
 
-    fun filterTransactions(start: LocalDateTime, end: LocalDateTime): List<TransactionModel> {
-        return service.transactionsFilter(start, end)
+    // --- CORREÇÃO AQUI ---
+    // Antes: retornava List direto (Erro Suspend)
+    // Agora: Atualiza a lista _transactions dentro de uma corrotina
+    fun filterTransactions(start: LocalDateTime, end: LocalDateTime) {
+        viewModelScope.launch {
+            val filteredList = service.transactionsFilter(start, end)
+            _transactions.clear()
+            _transactions.addAll(filteredList)
+        }
     }
 
+    // Esta continua igual, pois calcula sobre a lista já carregada na memória
     fun sumExpenses(): Double = service.sumTotalExpenses(_transactions)
 }

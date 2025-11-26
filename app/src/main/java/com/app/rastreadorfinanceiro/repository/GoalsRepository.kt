@@ -1,5 +1,6 @@
 package com.app.rastreadorfinanceiro.repository
 
+
 import com.app.rastreadorfinanceiro.data.GoalDao
 import com.app.rastreadorfinanceiro.data.GoalEntity
 import com.app.rastreadorfinanceiro.model.GoalModel

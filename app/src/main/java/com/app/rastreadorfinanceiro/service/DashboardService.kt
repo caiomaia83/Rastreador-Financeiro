@@ -1,14 +1,29 @@
 package com.app.rastreadorfinanceiro.service
 
-import com.app.rastreadorfinanceiro.model.CategoryModel
 import com.app.rastreadorfinanceiro.model.ExpenseModel
+import com.app.rastreadorfinanceiro.repository.CategoryRepository
+import com.app.rastreadorfinanceiro.repository.TransactionRepository
 
-class DashboardService : IDashboardService {
-    override fun expensesByCategory(expenses: List<ExpenseModel>, categories: List<CategoryModel>): Map<String, Double> {
-        return expenses.groupBy { it.category.id }.mapValues { entry -> entry.value.sumOf { it.amount } }
-    }
+class DashboardService(
+    private val transactionRepo: TransactionRepository,
+    private val categoryRepo: CategoryRepository
+) : IDashboardService {
 
-    override fun filterExpensesByCategory(expenses: List<ExpenseModel>, category: CategoryModel): List<ExpenseModel> {
-        return expenses.filter { it.category.id == category.id }
+    override suspend fun loadExpensesByCategory(): Map<String, Double> {
+        // 1. Busca dados do banco
+        val transactions = transactionRepo.fetchTransactions()
+        val categories = categoryRepo.fetchCategories()
+
+        // 2. Filtra apenas despesas
+        val expenses = transactions.filterIsInstance<ExpenseModel>()
+
+        // 3. Agrupa por Categoria (ID) e soma
+        val expensesById = expenses.groupBy { it.category.id }
+            .mapValues { entry -> entry.value.sumOf { it.amount } }
+
+        // 4. Traduz ID para NOME da categoria (para o gráfico)
+        return expensesById.mapKeys { (id, _) ->
+            categories.find { it.id == id }?.name ?: "Outros"
+        }
     }
 }

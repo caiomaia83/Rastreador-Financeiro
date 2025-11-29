@@ -1,19 +1,34 @@
 package com.app.rastreadorfinanceiro.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.app.rastreadorfinanceiro.model.CategoryModel
-import com.app.rastreadorfinanceiro.model.ExpenseModel
+import androidx.lifecycle.viewModelScope
+import com.app.rastreadorfinanceiro.repository.CategoryRepository
+import com.app.rastreadorfinanceiro.repository.TransactionRepository
 import com.app.rastreadorfinanceiro.service.DashboardService
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class DashboardViewModel(
-    private val service: DashboardService = DashboardService()
+    transactionRepo: TransactionRepository,
+    categoryRepo: CategoryRepository
 ) : ViewModel() {
 
-    fun expensesByCategory(expenses: List<ExpenseModel>, categories: List<CategoryModel>): Map<String, Double> {
-        return service.expensesByCategory(expenses, categories)
+    // Agora passamos os repositórios para o Service
+    private val service = DashboardService(transactionRepo, categoryRepo)
+
+    private val _expensesByCategory = MutableStateFlow<Map<String, Double>>(emptyMap())
+    val expensesByCategory: StateFlow<Map<String, Double>> = _expensesByCategory.asStateFlow()
+
+    init {
+        loadDashboardData()
     }
 
-    fun filterExpensesByCategory(expenses: List<ExpenseModel>, category: CategoryModel): List<ExpenseModel> {
-        return service.filterExpensesByCategory(expenses, category)
+    fun loadDashboardData() {
+        viewModelScope.launch {
+            // O ViewModel ficou bem mais limpo! O Service faz o trabalho pesado.
+            _expensesByCategory.value = service.loadExpensesByCategory()
+        }
     }
 }

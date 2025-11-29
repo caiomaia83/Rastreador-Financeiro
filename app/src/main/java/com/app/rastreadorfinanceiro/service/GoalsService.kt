@@ -1,7 +1,7 @@
 package com.app.rastreadorfinanceiro.service
 
-import com.app.rastreadorfinanceiro.model.GoalModel
 import com.app.rastreadorfinanceiro.model.CategoryModel
+import com.app.rastreadorfinanceiro.model.GoalModel
 import com.app.rastreadorfinanceiro.repository.GoalsRepository
 
 class GoalsService(
@@ -12,14 +12,13 @@ class GoalsService(
         return goals.associate { it.categoryId to it.amount }
     }
 
-
     override fun loadPercentExpenseGoals(goals: Map<String, Double>, goalsList: List<GoalModel>, maps: Map<String, Double>): Map<String, Double> {
-        // placeholder impl
-        return goals
+        return goals // Placeholder
     }
 
-    override fun balanceByCategory(): Map<String, Double> {
-        val goals = repo.fetchGoals()
+    // ADICIONE 'suspend' AQUI TAMBÉM:
+    override suspend fun balanceByCategory(): Map<String, Double> {
+        val goals = repo.fetchGoals() // Agora o erro vai sumir!
         return goals.groupBy { it.categoryId }.mapValues { entry -> entry.value.sumOf { it.amount } }
     }
 

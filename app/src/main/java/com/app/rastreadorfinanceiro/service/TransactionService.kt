@@ -10,7 +10,8 @@ class TransactionService(
     private val repo: TransactionRepository
 ) : ITransactionService {
 
-    override fun transactionsFilter(start: LocalDateTime, end: LocalDateTime): List<TransactionModel> {
+    // Agora é suspend e chama o repo.fetchTransactions() que também é suspend
+    override suspend fun transactionsFilter(start: LocalDateTime, end: LocalDateTime): List<TransactionModel> {
         return repo.fetchTransactions().filter { it.date >= start && it.date <= end }
     }
 

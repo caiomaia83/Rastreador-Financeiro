@@ -1,29 +1,42 @@
 package com.app.rastreadorfinanceiro.repository
 
+
+import com.app.rastreadorfinanceiro.data.GoalDao
+import com.app.rastreadorfinanceiro.data.GoalEntity
 import com.app.rastreadorfinanceiro.model.GoalModel
 
-class GoalsRepository : BaseRepository<GoalModel>() {
-    private val storage: MutableList<GoalModel> = mutableListOf()
+class GoalsRepository(private val dao: GoalDao) {
 
-    fun fetchGoals(): List<GoalModel> = storage.toList()
-
-    fun addGoal(goal: GoalModel) {
-        storage.add(goal)
+    suspend fun fetchGoals(): List<GoalModel> {
+        return dao.getAll().map { entity ->
+            GoalModel(
+                id = entity.id,
+                categoryId = entity.categoryId,
+                amount = entity.amount
+            )
+        }
     }
 
-    fun removeGoal(goal: GoalModel) {
-        storage.removeIf { it.id == goal.id }
+    suspend fun addGoal(goal: GoalModel) {
+        val entity = GoalEntity(
+            id = goal.id,
+            categoryId = goal.categoryId,
+            amount = goal.amount
+        )
+        dao.insert(entity)
     }
 
-    fun updateGoal(goal: GoalModel) {
-        val idx = storage.indexOfFirst { it.id == goal.id }
-        if (idx >= 0) storage[idx] = goal
+    suspend fun removeGoal(goal: GoalModel) {
+        val entity = GoalEntity(
+            id = goal.id,
+            categoryId = goal.categoryId,
+            amount = goal.amount
+        )
+        dao.delete(entity)
     }
 
-    override fun save(data: List<GoalModel>) {
-        storage.clear()
-        storage.addAll(data)
+    suspend fun updateGoal(goal: GoalModel) {
+        // Como o DAO usa REPLACE, inserir de novo atualiza o registro
+        addGoal(goal)
     }
-
-    override fun load(): List<GoalModel> = storage.toList()
 }

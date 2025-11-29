@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,7 +27,12 @@ import com.app.rastreadorfinanceiro.viewmodel.CategoryViewModel
 @Composable
 fun GestaoScreen(categoryViewModel: CategoryViewModel) {
     val categories = categoryViewModel.categories
+
+    // Estado para controlar o diálogo de Adição
     var showAddDialog by remember { mutableStateOf(false) }
+
+    // Estado para controlar o diálogo de Edição (guarda a categoria sendo editada)
+    var categoryToEdit by remember { mutableStateOf<CategoryModel?>(null) }
 
     Scaffold(
         floatingActionButton = {
@@ -60,6 +66,7 @@ fun GestaoScreen(categoryViewModel: CategoryViewModel) {
                     items(categories) { category ->
                         CategoryItem(
                             category = category,
+                            onEdit = { categoryToEdit = category }, // Abre diálogo de edição
                             onDelete = { categoryViewModel.removeCategory(category) }
                         )
                     }
@@ -68,19 +75,46 @@ fun GestaoScreen(categoryViewModel: CategoryViewModel) {
         }
     }
 
+    // Lógica para mostrar o Diálogo de ADIÇÃO
     if (showAddDialog) {
-        AddCategoryDialog(
+        CategoryFormDialog(
+            title = "Nova Categoria",
             onDismiss = { showAddDialog = false },
-            onConfirm = { name, color, limit -> // Agora recebe o limite também
+            onConfirm = { name, color, limit ->
                 categoryViewModel.addCategory(name, color, limit)
                 showAddDialog = false
+            }
+        )
+    }
+
+    // Lógica para mostrar o Diálogo de EDIÇÃO
+    if (categoryToEdit != null) {
+        CategoryFormDialog(
+            title = "Editar Categoria",
+            initialName = categoryToEdit!!.name,
+            initialColor = categoryToEdit!!.color,
+            initialLimit = categoryToEdit!!.budgetLimit,
+            onDismiss = { categoryToEdit = null },
+            onConfirm = { name, color, limit ->
+                // Ao editar, criamos uma cópia mantendo o ID original
+                val updatedCategory = categoryToEdit!!.copy(
+                    name = name,
+                    color = color,
+                    budgetLimit = limit
+                )
+                categoryViewModel.updateCategory(updatedCategory)
+                categoryToEdit = null
             }
         )
     }
 }
 
 @Composable
-fun CategoryItem(category: CategoryModel, onDelete: () -> Unit) {
+fun CategoryItem(
+    category: CategoryModel,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
@@ -92,8 +126,8 @@ fun CategoryItem(category: CategoryModel, onDelete: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                // Bolinha da cor da categoria
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                // Bolinha da cor
                 Box(
                     modifier = Modifier
                         .size(24.dp)
@@ -108,7 +142,6 @@ fun CategoryItem(category: CategoryModel, onDelete: () -> Unit) {
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium
                     )
-                    // Se tiver limite definido, exibe abaixo do nome
                     if (category.budgetLimit != null && category.budgetLimit > 0) {
                         Text(
                             text = "Teto: R$ ${String.format("%.2f", category.budgetLimit)}",
@@ -118,20 +151,37 @@ fun CategoryItem(category: CategoryModel, onDelete: () -> Unit) {
                     }
                 }
             }
-            IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete, contentDescription = "Remover", tint = Color.Gray)
+
+            // Botões de Ação
+            Row {
+                IconButton(onClick = onEdit) {
+                    Icon(Icons.Default.Edit, contentDescription = "Editar", tint = MaterialTheme.colorScheme.primary)
+                }
+                IconButton(onClick = onDelete) {
+                    Icon(Icons.Default.Delete, contentDescription = "Remover", tint = Color.Gray)
+                }
             }
         }
     }
 }
 
+// Dialogo Reutilizável (Serve para Criar e Editar)
 @Composable
-fun AddCategoryDialog(onDismiss: () -> Unit, onConfirm: (String, Color, Double?) -> Unit) {
-    var name by remember { mutableStateOf("") }
-    var limitText by remember { mutableStateOf("") } // Novo estado para o texto do limite
-    var selectedColor by remember { mutableStateOf(Color(0xFFEF5350)) } // Vermelho padrão
+fun CategoryFormDialog(
+    title: String,
+    initialName: String = "",
+    initialColor: Color = Color(0xFFEF5350), // Vermelho padrão
+    initialLimit: Double? = null,
+    onDismiss: () -> Unit,
+    onConfirm: (String, Color, Double?) -> Unit
+) {
+    var name by remember { mutableStateOf(initialName) }
 
-    // Lista de cores pré-definidas para o usuário escolher
+    // Converte o Double? para String para exibir no TextField
+    var limitText by remember { mutableStateOf(initialLimit?.toString() ?: "") }
+
+    var selectedColor by remember { mutableStateOf(initialColor) }
+
     val colors = listOf(
         Color(0xFFEF5350), // Vermelho
         Color(0xFF42A5F5), // Azul
@@ -149,7 +199,7 @@ fun AddCategoryDialog(onDismiss: () -> Unit, onConfirm: (String, Color, Double?)
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
-                Text("Nova Categoria", style = MaterialTheme.typography.titleLarge)
+                Text(title, style = MaterialTheme.typography.titleLarge)
                 Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedTextField(
@@ -162,7 +212,6 @@ fun AddCategoryDialog(onDismiss: () -> Unit, onConfirm: (String, Color, Double?)
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Novo campo para o Teto de Gastos (Opcional)
                 OutlinedTextField(
                     value = limitText,
                     onValueChange = { limitText = it },
@@ -176,7 +225,7 @@ fun AddCategoryDialog(onDismiss: () -> Unit, onConfirm: (String, Color, Double?)
                 Text("Escolha uma cor:", style = MaterialTheme.typography.bodyMedium)
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Grid simples de cores
+                // Grid de cores
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
@@ -208,7 +257,6 @@ fun AddCategoryDialog(onDismiss: () -> Unit, onConfirm: (String, Color, Double?)
                     Button(
                         onClick = {
                             if (name.isNotEmpty()) {
-                                // Converte o texto do limite para Double (ou null se vazio/inválido)
                                 val limit = limitText.toDoubleOrNull()
                                 onConfirm(name, selectedColor, limit)
                             }

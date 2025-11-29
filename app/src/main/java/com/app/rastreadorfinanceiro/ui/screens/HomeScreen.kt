@@ -139,7 +139,9 @@ fun AddTransactionDialog(
 ) {
     var amountText by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf(categories.firstOrNull()) }
+
+    // Inicializa como null para forçar o usuário a escolher se for Despesa
+    var selectedCategory by remember { mutableStateOf<CategoryModel?>(null) }
     var expanded by remember { mutableStateOf(false) }
 
     Dialog(onDismissRequest = onDismiss) {
@@ -175,7 +177,10 @@ fun AddTransactionDialog(
                             onClick = { expanded = true },
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(selectedCategory?.name ?: "Selecione a Categoria")
+                            Text(
+                                text = selectedCategory?.name ?: "Selecione a Categoria",
+                                color = if (selectedCategory == null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                            )
                         }
                         DropdownMenu(
                             expanded = expanded,
@@ -197,12 +202,21 @@ fun AddTransactionDialog(
                 Spacer(Modifier.height(24.dp))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                     TextButton(onClick = onDismiss) { Text("Cancelar") }
-                    Button(onClick = {
-                        val amount = amountText.toDoubleOrNull()
-                        if (amount != null && description.isNotEmpty()) {
-                            onConfirm(amount, description, selectedCategory)
-                        }
-                    }) { Text("Salvar") }
+
+                    // Validação: Botão só ativa se tiver valor, descrição e (se for despesa) categoria
+                    val isValid = amountText.toDoubleOrNull() != null &&
+                            description.isNotEmpty() &&
+                            (!isExpense || selectedCategory != null)
+
+                    Button(
+                        onClick = {
+                            val amount = amountText.toDoubleOrNull()
+                            if (amount != null) {
+                                onConfirm(amount, description, selectedCategory)
+                            }
+                        },
+                        enabled = isValid
+                    ) { Text("Salvar") }
                 }
             }
         }

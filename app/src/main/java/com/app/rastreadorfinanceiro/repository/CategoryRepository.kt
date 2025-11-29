@@ -15,7 +15,8 @@ class CategoryRepository(private val dao: CategoryDao) {
             CategoryModel(
                 id = entity.id,
                 name = entity.name,
-                color = Color(entity.colorArgb) // Converte Int -> Color
+                color = Color(entity.colorArgb), // Converte Int -> Color
+                budgetLimit = entity.budgetLimit // Mapeia o limite do banco para a tela
             )
         }
     }
@@ -25,16 +26,19 @@ class CategoryRepository(private val dao: CategoryDao) {
         val entity = CategoryEntity(
             id = category.id,
             name = category.name,
-            colorArgb = category.color.toArgb() // Converte Color -> Int
+            colorArgb = category.color.toArgb(), // Converte Color -> Int
+            budgetLimit = category.budgetLimit // Salva o limite no banco
         )
         dao.insert(entity)
     }
 
+    // AQUI ESTÁ A FUNÇÃO QUE ESTAVA FALTANDO OU COM ERRO
     suspend fun removeCategory(category: CategoryModel) {
         val entity = CategoryEntity(
             id = category.id,
             name = category.name,
-            colorArgb = category.color.toArgb()
+            colorArgb = category.color.toArgb(),
+            budgetLimit = category.budgetLimit
         )
         dao.delete(entity)
     }

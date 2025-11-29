@@ -122,14 +122,14 @@ fun RastreadorFinanceiroApp(viewModelFactory: RastreadorViewModelFactory) {
                         }
                     }
 
+// ... (outros destinations) ...
+
                     AppDestinations.GESTAO -> {
                         val cViewModel: CategoryViewModel = viewModel(factory = viewModelFactory)
-                        val gViewModel: GoalsViewModel = viewModel(factory = viewModelFactory)
-
-                        // Placeholder (Ainda não criamos a UI de GestaoScreen)
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text("Tela de Gestão (Em Breve)")
-                        }
+                        // AQUI: Removemos o placeholder e chamamos a tela real
+                        com.app.rastreadorfinanceiro.ui.screens.GestaoScreen(
+                            categoryViewModel = cViewModel
+                        )
                     }
                 }
             }

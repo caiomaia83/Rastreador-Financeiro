@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [TransactionEntity::class, CategoryEntity::class, GoalEntity::class], version = 1)
+@Database(entities = [TransactionEntity::class, CategoryEntity::class, GoalEntity::class], version = 2) // VERSÃO 2
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
@@ -14,7 +14,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
     abstract fun goalDao(): GoalDao
 
-    // --- ESSE BLOCO É O QUE FALTA PARA O ERRO 'getDatabase' SUMIR ---
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
@@ -25,7 +24,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "financeiro_db"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration() // Adicione isso para recriar o banco na V2
+                    .build()
                 INSTANCE = instance
                 instance
             }

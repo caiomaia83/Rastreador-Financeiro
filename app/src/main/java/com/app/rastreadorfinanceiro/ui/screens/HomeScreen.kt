@@ -203,7 +203,7 @@ fun AddTransactionDialog(
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                     TextButton(onClick = onDismiss) { Text("Cancelar") }
 
-                    // Validação: Botão só ativa se tiver valor, descrição e (se for despesa) categoria
+
                     val isValid = amountText.toDoubleOrNull() != null &&
                             description.isNotEmpty() &&
                             (!isExpense || selectedCategory != null)

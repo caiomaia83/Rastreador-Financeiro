@@ -14,19 +14,19 @@ class RastreadorViewModelFactory(
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        // Criação do TransactionViewModel
+
         if (modelClass.isAssignableFrom(TransactionViewModel::class.java)) {
             return TransactionViewModel(transactionRepository) as T
         }
-        // Criação do CategoryViewModel
+
         if (modelClass.isAssignableFrom(CategoryViewModel::class.java)) {
             return CategoryViewModel(categoryRepository) as T
         }
-        // Criação do GoalsViewModel
+
         if (modelClass.isAssignableFrom(GoalsViewModel::class.java)) {
             return GoalsViewModel(goalsRepository) as T
         }
-        // Criação do DashboardViewModel (Este é o que exige 2 repositórios!)
+
         if (modelClass.isAssignableFrom(DashboardViewModel::class.java)) {
             return DashboardViewModel(transactionRepository, categoryRepository) as T
         }

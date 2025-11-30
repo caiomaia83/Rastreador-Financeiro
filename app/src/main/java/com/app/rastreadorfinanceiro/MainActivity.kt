@@ -43,15 +43,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // 1. Inicializa o Banco de Dados (Singleton)
         val db = AppDatabase.getDatabase(applicationContext)
 
-        // 2. Cria os Repositórios (Injeção de Dependência Manual)
+
         val transactionRepo = TransactionRepository(db.transactionDao(), db.categoryDao())
         val categoryRepo = CategoryRepository(db.categoryDao())
         val goalsRepo = GoalsRepository(db.goalDao())
 
-        // 3. Cria a Fábrica de ViewModels
+
         val viewModelFactory = RastreadorViewModelFactory(
             transactionRepo,
             categoryRepo,
@@ -60,7 +59,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             RastreadorFinanceiroTheme {
-                // Passa a fábrica para o App
+
                 RastreadorFinanceiroApp(viewModelFactory)
             }
         }
@@ -89,17 +88,17 @@ fun RastreadorFinanceiroApp(viewModelFactory: RastreadorViewModelFactory) {
         }
     ) {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            // Container principal
+
             Box(modifier = Modifier.padding(innerPadding)) {
 
-                // Switch de Navegação
+
                 when (currentDestination) {
                     AppDestinations.HOME -> {
-                        // Instancia os ViewModels necessários usando a Factory
+
                         val tViewModel: TransactionViewModel = viewModel(factory = viewModelFactory)
                         val cViewModel: CategoryViewModel = viewModel(factory = viewModelFactory)
 
-                        // Chama a Tela Home
+
                         HomeScreen(
                             transactionViewModel = tViewModel,
                             categoryViewModel = cViewModel
@@ -109,24 +108,22 @@ fun RastreadorFinanceiroApp(viewModelFactory: RastreadorViewModelFactory) {
                     AppDestinations.EXTRATO -> {
                         val tViewModel: TransactionViewModel = viewModel(factory = viewModelFactory)
 
-                        // Chama a Tela Extrato
+
                         ExtratoScreen(viewModel = tViewModel)
                     }
 
                     AppDestinations.GRAFICOS -> {
                         val dViewModel: DashboardViewModel = viewModel(factory = viewModelFactory)
 
-                        // Placeholder (Ainda não criamos a UI de GraficosScreen)
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text("Tela de Gráficos (Em Breve)")
-                        }
+
+                        com.app.rastreadorfinanceiro.ui.screens.GraficosScreen(viewModel = dViewModel)
                     }
 
-// ... (outros destinations) ...
+
 
                     AppDestinations.GESTAO -> {
                         val cViewModel: CategoryViewModel = viewModel(factory = viewModelFactory)
-                        // AQUI: Removemos o placeholder e chamamos a tela real
+
                         com.app.rastreadorfinanceiro.ui.screens.GestaoScreen(
                             categoryViewModel = cViewModel
                         )

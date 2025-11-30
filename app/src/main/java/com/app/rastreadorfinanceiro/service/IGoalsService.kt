@@ -12,7 +12,7 @@ interface IGoalsService {
         maps: Map<String, Double>
     ): Map<String, Double>
 
-    // ADICIONE 'suspend' AQUI:
+
     suspend fun balanceByCategory(): Map<String, Double>
 
     fun sumTotalGoals(goals: List<GoalModel>): Double

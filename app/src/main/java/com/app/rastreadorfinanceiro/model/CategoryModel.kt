@@ -6,5 +6,5 @@ data class CategoryModel(
     val id: String,
     val name: String,
     val color: Color,
-    val budgetLimit: Double? = null // Novo campo
+    val budgetLimit: Double? = null
 )

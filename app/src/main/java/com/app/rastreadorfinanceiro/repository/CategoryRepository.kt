@@ -8,15 +8,14 @@ import com.app.rastreadorfinanceiro.model.CategoryModel
 
 class CategoryRepository(private val dao: CategoryDao) {
 
-    // Busca do banco e converte para o modelo da tela
     suspend fun fetchCategories(): List<CategoryModel> {
         val entities = dao.getAll()
         return entities.map { entity ->
             CategoryModel(
                 id = entity.id,
                 name = entity.name,
-                color = Color(entity.colorArgb), // Converte Int -> Color
-                budgetLimit = entity.budgetLimit // Mapeia o limite do banco para a tela
+                color = Color(entity.colorArgb),
+                budgetLimit = entity.budgetLimit
             )
         }
     }
@@ -26,13 +25,13 @@ class CategoryRepository(private val dao: CategoryDao) {
         val entity = CategoryEntity(
             id = category.id,
             name = category.name,
-            colorArgb = category.color.toArgb(), // Converte Color -> Int
-            budgetLimit = category.budgetLimit // Salva o limite no banco
+            colorArgb = category.color.toArgb(),
+            budgetLimit = category.budgetLimit
         )
         dao.insert(entity)
     }
 
-    // AQUI ESTÁ A FUNÇÃO QUE ESTAVA FALTANDO OU COM ERRO
+
     suspend fun removeCategory(category: CategoryModel) {
         val entity = CategoryEntity(
             id = category.id,
@@ -44,8 +43,6 @@ class CategoryRepository(private val dao: CategoryDao) {
     }
 
     suspend fun updateCategory(category: CategoryModel) {
-        // Como configuramos o DAO com OnConflictStrategy.REPLACE,
-        // basta inserir novamente com o mesmo ID que ele atualiza.
         addCategory(category)
     }
 }

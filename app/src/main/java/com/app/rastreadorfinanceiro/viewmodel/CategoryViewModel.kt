@@ -24,7 +24,6 @@ class CategoryViewModel(
         viewModelScope.launch {
             val currentList = repo.fetchCategories()
 
-            // LÓGICA DE PRÉ-POPULAÇÃO (SEED)
             // Se o banco estiver vazio, cria as categorias padrão
             if (currentList.isEmpty()) {
                 val defaultCategories = listOf(
@@ -36,10 +35,10 @@ class CategoryViewModel(
                     CategoryModel(UUID.randomUUID().toString(), "Outros", Color(0xFF8D6E63))       // Marrom
                 )
 
-                // Salva cada uma no banco (o limite será null automaticamente)
+
                 defaultCategories.forEach { repo.addCategory(it) }
 
-                // Atualiza a lista da tela com as novas categorias
+
                 _categories.clear()
                 _categories.addAll(repo.fetchCategories())
             } else {
@@ -50,9 +49,9 @@ class CategoryViewModel(
         }
     }
 
-    // Função atualizada para aceitar o limite (budgetLimit)
+
     fun addCategory(name: String, color: Color, limit: Double? = null) {
-        // Cria a categoria passando o limite (pode ser null ou um valor)
+
         val category = CategoryModel(UUID.randomUUID().toString(), name, color, limit)
         viewModelScope.launch {
             repo.addCategory(category)

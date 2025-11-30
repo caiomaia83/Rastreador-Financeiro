@@ -13,12 +13,12 @@ class GoalsService(
     }
 
     override fun loadPercentExpenseGoals(goals: Map<String, Double>, goalsList: List<GoalModel>, maps: Map<String, Double>): Map<String, Double> {
-        return goals // Placeholder
+        return goals
     }
 
-    // ADICIONE 'suspend' AQUI TAMBÉM:
+
     override suspend fun balanceByCategory(): Map<String, Double> {
-        val goals = repo.fetchGoals() // Agora o erro vai sumir!
+        val goals = repo.fetchGoals() 
         return goals.groupBy { it.categoryId }.mapValues { entry -> entry.value.sumOf { it.amount } }
     }
 

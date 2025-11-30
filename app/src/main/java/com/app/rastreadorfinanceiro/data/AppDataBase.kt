@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [TransactionEntity::class, CategoryEntity::class, GoalEntity::class], version = 2) // VERSÃO 2
+@Database(entities = [TransactionEntity::class, CategoryEntity::class, GoalEntity::class], version = 2)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
@@ -25,7 +25,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "financeiro_db"
                 )
-                    .fallbackToDestructiveMigration() // Adicione isso para recriar o banco na V2
+                    .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance

@@ -26,13 +26,13 @@ import java.time.format.DateTimeFormatter
 fun ExtratoScreen(viewModel: TransactionViewModel) {
     val transactions = viewModel.transactions
 
-    // Agrupamento
+
     val groupedTransactions = remember(transactions) {
         transactions.groupBy { transaction ->
             when (transaction) {
-                // Agrupa pelo OBJETO Categoria inteiro para termos acesso ao 'budgetLimit'
+
                 is ExpenseModel -> transaction.category
-                // Cria uma categoria fake para receitas
+
                 is IncomeModel -> null
                 else -> null
             }
@@ -53,7 +53,7 @@ fun ExtratoScreen(viewModel: TransactionViewModel) {
                 item {
                     val categoryName = category?.name ?: "Receitas"
 
-                    // Cabeçalho da Categoria
+
                     Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 8.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -67,7 +67,7 @@ fun ExtratoScreen(viewModel: TransactionViewModel) {
                                 fontWeight = FontWeight.Bold
                             )
 
-                            // SE TIVER LIMITE E FOR DESPESA (category != null)
+
                             if (category?.budgetLimit != null && category.budgetLimit > 0) {
                                 val totalExpenses = transactionList.sumOf { it.amount }
                                 val limit = category.budgetLimit
@@ -120,11 +120,10 @@ fun ExtratoScreen(viewModel: TransactionViewModel) {
     }
 }
 
-// TransactionItem continua igual...
+
 @Composable
 fun TransactionItem(transaction: TransactionModel, onDelete: () -> Unit) {
-    // ... (Copie o código anterior do TransactionItem aqui ou mantenha o arquivo se não alterou)
-    // Para simplificar, vou resumir, mas o código é o mesmo do passo anterior.
+
     val isExpense = transaction is ExpenseModel
     val color = if (isExpense) Color(0xFFC62828) else Color(0xFF2E7D32)
     val amountPrefix = if (isExpense) "-" else "+"

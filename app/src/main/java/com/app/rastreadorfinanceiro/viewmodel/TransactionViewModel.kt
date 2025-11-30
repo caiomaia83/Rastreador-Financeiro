@@ -67,9 +67,7 @@ class TransactionViewModel(
         }
     }
 
-    // --- CORREÇÃO AQUI ---
-    // Antes: retornava List direto (Erro Suspend)
-    // Agora: Atualiza a lista _transactions dentro de uma corrotina
+
     fun filterTransactions(start: LocalDateTime, end: LocalDateTime) {
         viewModelScope.launch {
             val filteredList = service.transactionsFilter(start, end)
@@ -78,6 +76,6 @@ class TransactionViewModel(
         }
     }
 
-    // Esta continua igual, pois calcula sobre a lista já carregada na memória
+
     fun sumExpenses(): Double = service.sumTotalExpenses(_transactions)
 }

@@ -8,5 +8,5 @@ data class CategoryEntity(
     @PrimaryKey val id: String,
     val name: String,
     val colorArgb: Int,
-    val budgetLimit: Double? = null // Novo campo (pode ser nulo)
+    val budgetLimit: Double? = null
 )

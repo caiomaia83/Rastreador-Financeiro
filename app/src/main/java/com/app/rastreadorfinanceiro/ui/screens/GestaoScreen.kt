@@ -28,10 +28,10 @@ import com.app.rastreadorfinanceiro.viewmodel.CategoryViewModel
 fun GestaoScreen(categoryViewModel: CategoryViewModel) {
     val categories = categoryViewModel.categories
 
-    // Estado para controlar o diálogo de Adição
+
     var showAddDialog by remember { mutableStateOf(false) }
 
-    // Estado para controlar o diálogo de Edição
+
     var categoryToEdit by remember { mutableStateOf<CategoryModel?>(null) }
 
     Scaffold(
@@ -87,7 +87,6 @@ fun GestaoScreen(categoryViewModel: CategoryViewModel) {
         }
     }
 
-    // Lógica para mostrar o Diálogo de ADIÇÃO
     if (showAddDialog) {
         CategoryFormDialog(
             title = "Nova Categoria",
@@ -99,7 +98,7 @@ fun GestaoScreen(categoryViewModel: CategoryViewModel) {
         )
     }
 
-    // Lógica para mostrar o Diálogo de EDIÇÃO
+
     if (categoryToEdit != null) {
         CategoryFormDialog(
             title = "Editar Categoria",

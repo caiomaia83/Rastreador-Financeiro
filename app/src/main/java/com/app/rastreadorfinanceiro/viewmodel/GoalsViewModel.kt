@@ -21,7 +21,7 @@ class GoalsViewModel(
     private val _goals = mutableStateListOf<GoalModel>()
     val goals: List<GoalModel> get() = _goals
 
-    // 1. Criamos um Estado para guardar o balanço (Map de Categoria -> Valor)
+
     private val _balanceByCategory = MutableStateFlow<Map<String, Double>>(emptyMap())
     val balanceByCategory: StateFlow<Map<String, Double>> = _balanceByCategory.asStateFlow()
 
@@ -31,12 +31,12 @@ class GoalsViewModel(
 
     fun refresh() {
         viewModelScope.launch {
-            // Carrega a lista de metas
+
             val fetchedGoals = repo.fetchGoals()
             _goals.clear()
             _goals.addAll(fetchedGoals)
 
-            // 2. Agora chamamos a função suspend DENTRO da coroutine e atualizamos o estado
+
             _balanceByCategory.value = service.balanceByCategory()
         }
     }
@@ -63,6 +63,6 @@ class GoalsViewModel(
         }
     }
 
-    // Esta função continua normal pois trabalha apenas com a lista em memória (_goals)
+    
     fun sumTotalGoals(): Double = service.sumTotalGoals(_goals)
 }

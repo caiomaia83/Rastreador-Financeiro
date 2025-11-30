@@ -16,9 +16,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.app.rastreadorfinanceiro.model.ExpenseModel
 import com.app.rastreadorfinanceiro.model.IncomeModel
 import com.app.rastreadorfinanceiro.model.TransactionModel
+import com.app.rastreadorfinanceiro.ui.theme.*
 import com.app.rastreadorfinanceiro.viewmodel.TransactionViewModel
 import java.time.format.DateTimeFormatter
 
@@ -39,15 +41,24 @@ fun ExtratoScreen(viewModel: TransactionViewModel) {
         }
     }
 
-    if (transactions.isEmpty()) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("Nenhuma movimentação registrada.")
-        }
-    } else {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        if (transactions.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(
+                    "Nenhuma movimentação registrada.",
+                    color = TextSecondary,
+                    fontSize = 16.sp
+                )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize().padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
             groupedTransactions.forEach { (category, transactionList) ->
 
                 item {
@@ -63,8 +74,9 @@ fun ExtratoScreen(viewModel: TransactionViewModel) {
                             Text(
                                 text = categoryName,
                                 style = MaterialTheme.typography.titleMedium,
-                                color = category?.color ?: MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.Bold
+                                color = category?.color ?: SuccessGreenLight,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp
                             )
 
 
@@ -72,13 +84,14 @@ fun ExtratoScreen(viewModel: TransactionViewModel) {
                                 val totalExpenses = transactionList.sumOf { it.amount }
                                 val limit = category.budgetLimit
                                 val isOverBudget = totalExpenses > limit
-                                val statusColor = if (isOverBudget) Color.Red else Color(0xFF2E7D32)
+                                val statusColor = if (isOverBudget) ErrorRed else SuccessGreen
 
                                 Text(
                                     text = "${String.format("R$ %.0f", totalExpenses)} / R$ ${String.format("%.0f", limit)}",
                                     style = MaterialTheme.typography.labelMedium,
                                     color = statusColor,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.sp
                                 )
                             }
                         }
@@ -101,7 +114,9 @@ fun ExtratoScreen(viewModel: TransactionViewModel) {
                                 Text(
                                     text = "Limite excedido!",
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = Color.Red,
+                                    color = ErrorRedLight,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
                                     modifier = Modifier.align(Alignment.End)
                                 )
                             }
@@ -116,6 +131,7 @@ fun ExtratoScreen(viewModel: TransactionViewModel) {
                     )
                 }
             }
+            }
         }
     }
 }
@@ -125,13 +141,14 @@ fun ExtratoScreen(viewModel: TransactionViewModel) {
 fun TransactionItem(transaction: TransactionModel, onDelete: () -> Unit) {
 
     val isExpense = transaction is ExpenseModel
-    val color = if (isExpense) Color(0xFFC62828) else Color(0xFF2E7D32)
+    val color = if (isExpense) ErrorRed else SuccessGreen
     val amountPrefix = if (isExpense) "-" else "+"
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
     Card(
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+        colors = CardDefaults.cardColors(containerColor = DarkCard),
+        shape = RoundedCornerShape(12.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -139,17 +156,34 @@ fun TransactionItem(transaction: TransactionModel, onDelete: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text(text = transaction.description, style = MaterialTheme.typography.bodyLarge)
-                Text(text = transaction.date.format(formatter), style = MaterialTheme.typography.bodySmall)
+                Text(
+                    text = transaction.description,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = TextPrimary,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 16.sp
+                )
+                Text(
+                    text = transaction.date.format(formatter),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextSecondary,
+                    fontSize = 14.sp
+                )
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = "$amountPrefix R$ ${String.format("%.2f", transaction.amount)}",
                     color = color,
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
                 )
                 IconButton(onClick = onDelete) {
-                    Icon(Icons.Default.Delete, contentDescription = "Deletar", tint = Color.Gray)
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = "Deletar",
+                        tint = TextTertiary
+                    )
                 }
             }
         }

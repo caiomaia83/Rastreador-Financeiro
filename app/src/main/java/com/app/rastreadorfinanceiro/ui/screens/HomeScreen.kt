@@ -54,7 +54,6 @@ fun HomeScreen(
     var selectedCategory by remember { mutableStateOf<CategoryModel?>(null) }
     var showAddCategoryDialog by remember { mutableStateOf(false) }
 
-    val recentTransactions = transactions.sortedByDescending { it.date }.take(5)
 
     LazyColumn(
         modifier = Modifier
@@ -287,29 +286,9 @@ fun HomeScreen(
             }
         }
 
-        // Recent transactions section
-        if (recentTransactions.isNotEmpty()) {
-            item {
-                Text(
-                    text = "Transações Recentes",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = TextPrimary.copy(alpha = 0.9f),
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 12.dp)
-                )
-            }
-
-            items(recentTransactions.size) { index ->
-                RecentTransactionItem(
-                    transaction = recentTransactions[index],
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-                )
-            }
-
             // Add spacing at bottom
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 

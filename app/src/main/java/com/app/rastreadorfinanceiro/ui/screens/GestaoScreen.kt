@@ -31,18 +31,11 @@ fun GestaoScreen(categoryViewModel: CategoryViewModel) {
     // Estado para controlar o diálogo de Adição
     var showAddDialog by remember { mutableStateOf(false) }
 
-    // Estado para controlar o diálogo de Edição (guarda a categoria sendo editada)
+    // Estado para controlar o diálogo de Edição
     var categoryToEdit by remember { mutableStateOf<CategoryModel?>(null) }
 
     Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { showAddDialog = true },
-                containerColor = MaterialTheme.colorScheme.primary
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Nova Categoria")
-            }
-        }
+
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -50,12 +43,31 @@ fun GestaoScreen(categoryViewModel: CategoryViewModel) {
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            Text(
-                text = "Minhas Categorias",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Minhas Categorias",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                // Botão de Adicionar no Canto Superior Direito
+                FilledIconButton(
+                    onClick = { showAddDialog = true },
+                    colors = IconButtonDefaults.filledIconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Nova Categoria")
+                }
+            }
+            // -----------------------------------
 
             if (categories.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -66,7 +78,7 @@ fun GestaoScreen(categoryViewModel: CategoryViewModel) {
                     items(categories) { category ->
                         CategoryItem(
                             category = category,
-                            onEdit = { categoryToEdit = category }, // Abre diálogo de edição
+                            onEdit = { categoryToEdit = category },
                             onDelete = { categoryViewModel.removeCategory(category) }
                         )
                     }
@@ -96,7 +108,6 @@ fun GestaoScreen(categoryViewModel: CategoryViewModel) {
             initialLimit = categoryToEdit!!.budgetLimit,
             onDismiss = { categoryToEdit = null },
             onConfirm = { name, color, limit ->
-                // Ao editar, criamos uma cópia mantendo o ID original
                 val updatedCategory = categoryToEdit!!.copy(
                     name = name,
                     color = color,
@@ -108,6 +119,7 @@ fun GestaoScreen(categoryViewModel: CategoryViewModel) {
         )
     }
 }
+
 
 @Composable
 fun CategoryItem(
@@ -127,7 +139,6 @@ fun CategoryItem(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                // Bolinha da cor
                 Box(
                     modifier = Modifier
                         .size(24.dp)
@@ -152,7 +163,6 @@ fun CategoryItem(
                 }
             }
 
-            // Botões de Ação
             Row {
                 IconButton(onClick = onEdit) {
                     Icon(Icons.Default.Edit, contentDescription = "Editar", tint = MaterialTheme.colorScheme.primary)
@@ -165,32 +175,22 @@ fun CategoryItem(
     }
 }
 
-// Dialogo Reutilizável (Serve para Criar e Editar)
 @Composable
 fun CategoryFormDialog(
     title: String,
     initialName: String = "",
-    initialColor: Color = Color(0xFFEF5350), // Vermelho padrão
+    initialColor: Color = Color(0xFFEF5350),
     initialLimit: Double? = null,
     onDismiss: () -> Unit,
     onConfirm: (String, Color, Double?) -> Unit
 ) {
     var name by remember { mutableStateOf(initialName) }
-
-    // Converte o Double? para String para exibir no TextField
     var limitText by remember { mutableStateOf(initialLimit?.toString() ?: "") }
-
     var selectedColor by remember { mutableStateOf(initialColor) }
 
     val colors = listOf(
-        Color(0xFFEF5350), // Vermelho
-        Color(0xFF42A5F5), // Azul
-        Color(0xFFFFCA28), // Amarelo
-        Color(0xFF66BB6A), // Verde
-        Color(0xFFAB47BC), // Roxo
-        Color(0xFF8D6E63), // Marrom
-        Color(0xFFFFA726), // Laranja
-        Color(0xFF78909C)  // Cinza Azulado
+        Color(0xFFEF5350), Color(0xFF42A5F5), Color(0xFFFFCA28), Color(0xFF66BB6A),
+        Color(0xFFAB47BC), Color(0xFF8D6E63), Color(0xFFFFA726), Color(0xFF78909C)
     )
 
     Dialog(onDismissRequest = onDismiss) {
@@ -225,15 +225,12 @@ fun CategoryFormDialog(
                 Text("Escolha uma cor:", style = MaterialTheme.typography.bodyMedium)
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Grid de cores
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     colors.take(4).forEach { color ->
-                        ColorCircle(color = color, isSelected = color == selectedColor) {
-                            selectedColor = color
-                        }
+                        ColorCircle(color = color, isSelected = color == selectedColor) { selectedColor = color }
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -242,9 +239,7 @@ fun CategoryFormDialog(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     colors.takeLast(4).forEach { color ->
-                        ColorCircle(color = color, isSelected = color == selectedColor) {
-                            selectedColor = color
-                        }
+                        ColorCircle(color = color, isSelected = color == selectedColor) { selectedColor = color }
                     }
                 }
 

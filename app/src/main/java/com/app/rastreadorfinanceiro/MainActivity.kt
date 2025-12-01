@@ -120,7 +120,6 @@ fun RastreadorFinanceiroApp(viewModelFactory: RastreadorViewModelFactory) {
 
                     }
 
-// ... (outros destinations) ...
 
                     AppDestinations.GESTAO -> {
                         val cViewModel: CategoryViewModel = viewModel(factory = viewModelFactory)

@@ -36,7 +36,7 @@ class GoalsRepository(private val dao: GoalDao) {
     }
 
     suspend fun updateGoal(goal: GoalModel) {
-        // Como o DAO usa REPLACE, inserir de novo atualiza o registro
+
         addGoal(goal)
     }
 }

@@ -1,6 +1,14 @@
 package com.app.rastreadorfinanceiro.service
 
+import androidx.compose.ui.graphics.Color
+
+
+data class CategoryExpense(
+    val name: String,
+    val value: Double,
+    val color: Color
+)
+
 interface IDashboardService {
-    // Nova função completa: Busca e calcula os dados para o gráfico
-    suspend fun loadExpensesByCategory(): Map<String, Double>
+    suspend fun loadExpensesByCategory(): List<CategoryExpense>
 }

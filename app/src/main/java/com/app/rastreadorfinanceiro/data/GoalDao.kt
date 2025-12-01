@@ -8,7 +8,7 @@ import androidx.room.Query
 
 @Dao
 interface GoalDao {
-    // SE O SEU ESTIVER SEM ": List<GoalEntity>", O ERRO ACONTECE!
+
     @Query("SELECT * FROM goals")
     suspend fun getAll(): List<GoalEntity>
 

@@ -14,6 +14,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.rastreadorfinanceiro.ui.screens.Graficos.DashboardPieChart
+import com.app.rastreadorfinanceiro.ui.theme.DarkBackground
+import com.app.rastreadorfinanceiro.ui.theme.DarkCard
+import com.app.rastreadorfinanceiro.ui.theme.ErrorRedLight
 import java.text.NumberFormat
 import com.app.rastreadorfinanceiro.viewmodel.DashboardViewModel
 
@@ -32,8 +35,7 @@ fun DashboardScreen(viewModel: DashboardViewModel = viewModel()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF000000
-            ))
+            .background(DarkBackground)
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
@@ -44,7 +46,7 @@ fun DashboardScreen(viewModel: DashboardViewModel = viewModel()) {
             text = "Total Gasto: ${formatter.format(total)}",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFFE94560)
+            color = ErrorRedLight
         )
 
         Spacer(Modifier.height(16.dp))
@@ -52,7 +54,7 @@ fun DashboardScreen(viewModel: DashboardViewModel = viewModel()) {
         // Card do gráfico
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF7A7A7A)),
+            colors = CardDefaults.cardColors(containerColor = DarkCard),
             shape = RoundedCornerShape(16.dp),
             elevation = CardDefaults.cardElevation(8.dp)
         ) {
@@ -66,7 +68,7 @@ fun DashboardScreen(viewModel: DashboardViewModel = viewModel()) {
         // Card do resumo
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF7A7A7A)),
+            colors = CardDefaults.cardColors(containerColor = DarkCard),
             shape = RoundedCornerShape(16.dp),
             elevation = CardDefaults.cardElevation(8.dp)
         ) {
@@ -98,6 +100,6 @@ fun SummaryRow(label: String, value: String) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(text = label, color = Color.White, fontSize = 18.sp)
-        Text(text = value, color = Color(0xFFE94560), fontSize = 18.sp)
+        Text(text = value, color = ErrorRedLight, fontSize = 18.sp)
     }
 }

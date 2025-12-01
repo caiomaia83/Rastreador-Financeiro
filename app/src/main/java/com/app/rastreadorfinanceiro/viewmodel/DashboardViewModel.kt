@@ -7,6 +7,7 @@ import com.app.rastreadorfinanceiro.model.ExpenseModel
 import com.app.rastreadorfinanceiro.model.TransactionModel
 import com.app.rastreadorfinanceiro.repository.CategoryRepository
 import com.app.rastreadorfinanceiro.repository.TransactionRepository
+import com.app.rastreadorfinanceiro.service.CategoryExpense
 import com.app.rastreadorfinanceiro.service.DashboardService
 import com.app.rastreadorfinanceiro.service.TransactionService
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,8 +32,8 @@ class DashboardViewModel(
 
     private val service = DashboardService(transactionRepo, categoryRepo)
 
-    private val _expensesByCategory = MutableStateFlow<Map<String, Double>>(emptyMap())
-    val expensesByCategory: StateFlow<Map<String, Double>> = _expensesByCategory.asStateFlow()
+    private val _expensesByCategory = MutableStateFlow<List<CategoryExpense>>(emptyList())
+    val expensesByCategory: StateFlow<List<CategoryExpense>> = _expensesByCategory.asStateFlow()
 
     init {
         loadDashboardData()

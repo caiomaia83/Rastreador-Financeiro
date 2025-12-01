@@ -7,6 +7,7 @@ import com.app.rastreadorfinanceiro.data.CategoryEntity
 import com.app.rastreadorfinanceiro.model.CategoryModel
 import com.app.rastreadorfinanceiro.utils.IconConverter
 
+
 class CategoryRepository(private val dao: CategoryDao) {
 
     suspend fun fetchCategories(): List<CategoryModel> {

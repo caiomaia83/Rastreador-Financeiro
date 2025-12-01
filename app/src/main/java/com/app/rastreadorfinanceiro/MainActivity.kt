@@ -1,5 +1,6 @@
 package com.app.rastreadorfinanceiro
 
+import DashboardScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -42,14 +43,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        // 1. Inicializa o Banco de Dados (Singleton)
         val db = AppDatabase.getDatabase(applicationContext)
 
-
+        // 2. Cria os Repositórios (Injeção de Dependência Manual)
         val transactionRepo = TransactionRepository(db.transactionDao(), db.categoryDao())
         val categoryRepo = CategoryRepository(db.categoryDao())
         val goalsRepo = GoalsRepository(db.goalDao())
 
-
+        // 3. Cria a Fábrica de ViewModels
         val viewModelFactory = RastreadorViewModelFactory(
             transactionRepo,
             categoryRepo,
@@ -58,7 +60,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             RastreadorFinanceiroTheme {
-
+                // Passa a fábrica para o App
                 RastreadorFinanceiroApp(viewModelFactory)
             }
         }
@@ -87,13 +89,13 @@ fun RastreadorFinanceiroApp(viewModelFactory: RastreadorViewModelFactory) {
         }
     ) {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-
+            // Container principal
             Box(modifier = Modifier.padding(innerPadding)) {
 
-
+                // Switch de Navegação
                 when (currentDestination) {
                     AppDestinations.HOME -> {
-
+                        // Instancia os ViewModels necessários usando a Factory
                         val tViewModel: TransactionViewModel = viewModel(factory = viewModelFactory)
                         val cViewModel: CategoryViewModel = viewModel(factory = viewModelFactory)
 
@@ -106,9 +108,8 @@ fun RastreadorFinanceiroApp(viewModelFactory: RastreadorViewModelFactory) {
 
                     AppDestinations.GRAFICOS -> {
                         val dViewModel: DashboardViewModel = viewModel(factory = viewModelFactory)
+                        DashboardScreen(dViewModel)
 
-
-                        com.app.rastreadorfinanceiro.ui.screens.GraficosScreen(viewModel = dViewModel)
                     }
 
                     AppDestinations.EXTRATO -> {

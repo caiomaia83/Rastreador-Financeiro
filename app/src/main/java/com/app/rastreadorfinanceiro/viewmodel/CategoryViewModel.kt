@@ -1,5 +1,7 @@
 package com.app.rastreadorfinanceiro.viewmodel
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
@@ -27,12 +29,12 @@ class CategoryViewModel(
             // Se o banco estiver vazio, cria as categorias padrão
             if (currentList.isEmpty()) {
                 val defaultCategories = listOf(
-                    CategoryModel(UUID.randomUUID().toString(), "Alimentação", Color(0xFFEF5350)), // Vermelho Claro
-                    CategoryModel(UUID.randomUUID().toString(), "Lazer", Color(0xFF42A5F5)),       // Azul
-                    CategoryModel(UUID.randomUUID().toString(), "Transporte", Color(0xFFFFCA28)),  // Amarelo
-                    CategoryModel(UUID.randomUUID().toString(), "Moradia", Color(0xFF66BB6A)),     // Verde
-                    CategoryModel(UUID.randomUUID().toString(), "Saúde", Color(0xFFAB47BC)),       // Roxo
-                    CategoryModel(UUID.randomUUID().toString(), "Outros", Color(0xFF8D6E63))       // Marrom
+                    CategoryModel(UUID.randomUUID().toString(), "Alimentação", Color(0xFFEF5350), null, Icons.Default.Place), // Vermelho Claro
+                    CategoryModel(UUID.randomUUID().toString(), "Lazer", Color(0xFF42A5F5), null, Icons.Default.Star),       // Azul
+                    CategoryModel(UUID.randomUUID().toString(), "Transporte", Color(0xFFFFCA28), null, Icons.Default.Phone),  // Amarelo
+                    CategoryModel(UUID.randomUUID().toString(), "Moradia", Color(0xFF66BB6A), null, Icons.Default.Home),     // Verde
+                    CategoryModel(UUID.randomUUID().toString(), "Saúde", Color(0xFFAB47BC), null, Icons.Default.Favorite),       // Roxo
+                    CategoryModel(UUID.randomUUID().toString(), "Outros", Color(0xFF8D6E63), null, Icons.Default.Settings)       // Marrom
                 )
 
 
@@ -50,9 +52,9 @@ class CategoryViewModel(
     }
 
 
-    fun addCategory(name: String, color: Color, limit: Double? = null) {
+    fun addCategory(name: String, color: Color, limit: Double? = null, icon: androidx.compose.ui.graphics.vector.ImageVector) {
 
-        val category = CategoryModel(UUID.randomUUID().toString(), name, color, limit)
+        val category = CategoryModel(UUID.randomUUID().toString(), name, color, limit, icon)
         viewModelScope.launch {
             repo.addCategory(category)
             refresh()

@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.toArgb
 import com.app.rastreadorfinanceiro.data.CategoryDao
 import com.app.rastreadorfinanceiro.data.CategoryEntity
 import com.app.rastreadorfinanceiro.model.CategoryModel
+import com.app.rastreadorfinanceiro.utils.IconConverter
 
 
 class CategoryRepository(private val dao: CategoryDao) {
@@ -16,7 +17,8 @@ class CategoryRepository(private val dao: CategoryDao) {
                 id = entity.id,
                 name = entity.name,
                 color = Color(entity.colorArgb),
-                budgetLimit = entity.budgetLimit
+                budgetLimit = entity.budgetLimit,
+                icon = IconConverter.stringToIcon(entity.iconName)
             )
         }
     }
@@ -27,7 +29,8 @@ class CategoryRepository(private val dao: CategoryDao) {
             id = category.id,
             name = category.name,
             colorArgb = category.color.toArgb(),
-            budgetLimit = category.budgetLimit
+            budgetLimit = category.budgetLimit,
+            iconName = IconConverter.iconToString(category.icon)
         )
         dao.insert(entity)
     }
@@ -38,7 +41,8 @@ class CategoryRepository(private val dao: CategoryDao) {
             id = category.id,
             name = category.name,
             colorArgb = category.color.toArgb(),
-            budgetLimit = category.budgetLimit
+            budgetLimit = category.budgetLimit,
+            iconName = IconConverter.iconToString(category.icon)
         )
         dao.delete(entity)
     }

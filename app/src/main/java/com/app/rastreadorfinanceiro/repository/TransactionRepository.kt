@@ -10,6 +10,7 @@ import com.app.rastreadorfinanceiro.model.CategoryModel
 import com.app.rastreadorfinanceiro.model.ExpenseModel
 import com.app.rastreadorfinanceiro.model.IncomeModel
 import com.app.rastreadorfinanceiro.model.TransactionModel
+import com.app.rastreadorfinanceiro.utils.IconConverter
 
 class TransactionRepository(
     private val transactionDao: TransactionDao,
@@ -43,7 +44,8 @@ class TransactionRepository(
                         id = categoryEntity.id,
                         name = categoryEntity.name,
                         color = Color(categoryEntity.colorArgb),
-                        budgetLimit = categoryEntity.budgetLimit
+                        budgetLimit = categoryEntity.budgetLimit,
+                        icon = IconConverter.stringToIcon(categoryEntity.iconName)
                     )
                 } else {
 

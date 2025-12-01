@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [TransactionEntity::class, CategoryEntity::class, GoalEntity::class], version = 2)
+@Database(entities = [TransactionEntity::class, CategoryEntity::class, GoalEntity::class], version = 3)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 

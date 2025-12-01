@@ -6,6 +6,7 @@ import com.app.rastreadorfinanceiro.data.CategoryDao
 import com.app.rastreadorfinanceiro.data.CategoryEntity
 import com.app.rastreadorfinanceiro.model.CategoryModel
 
+
 class CategoryRepository(private val dao: CategoryDao) {
 
     // Busca do banco e converte para o modelo da tela

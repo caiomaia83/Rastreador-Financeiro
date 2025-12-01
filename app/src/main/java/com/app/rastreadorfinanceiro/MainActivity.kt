@@ -1,5 +1,6 @@
 package com.app.rastreadorfinanceiro
 
+import DashboardScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -115,11 +116,8 @@ fun RastreadorFinanceiroApp(viewModelFactory: RastreadorViewModelFactory) {
 
                     AppDestinations.GRAFICOS -> {
                         val dViewModel: DashboardViewModel = viewModel(factory = viewModelFactory)
+                        DashboardScreen(dViewModel)
 
-                        // Placeholder (Ainda não criamos a UI de GraficosScreen)
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text("Tela de Gráficos (Em Breve)")
-                        }
                     }
 
 // ... (outros destinations) ...

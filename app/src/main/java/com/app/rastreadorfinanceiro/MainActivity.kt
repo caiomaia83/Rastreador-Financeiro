@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
@@ -99,17 +98,10 @@ fun RastreadorFinanceiroApp(viewModelFactory: RastreadorViewModelFactory) {
                         val cViewModel: CategoryViewModel = viewModel(factory = viewModelFactory)
 
 
-                        HomeScreen(
+                        com.app.rastreadorfinanceiro.ui.screens.AddTransactionScreen(
                             transactionViewModel = tViewModel,
                             categoryViewModel = cViewModel
                         )
-                    }
-
-                    AppDestinations.EXTRATO -> {
-                        val tViewModel: TransactionViewModel = viewModel(factory = viewModelFactory)
-
-
-                        ExtratoScreen(viewModel = tViewModel)
                     }
 
                     AppDestinations.GRAFICOS -> {
@@ -119,14 +111,11 @@ fun RastreadorFinanceiroApp(viewModelFactory: RastreadorViewModelFactory) {
                         com.app.rastreadorfinanceiro.ui.screens.GraficosScreen(viewModel = dViewModel)
                     }
 
+                    AppDestinations.EXTRATO -> {
+                        val tViewModel: TransactionViewModel = viewModel(factory = viewModelFactory)
 
 
-                    AppDestinations.GESTAO -> {
-                        val cViewModel: CategoryViewModel = viewModel(factory = viewModelFactory)
-
-                        com.app.rastreadorfinanceiro.ui.screens.GestaoScreen(
-                            categoryViewModel = cViewModel
-                        )
+                        ExtratoScreen(viewModel = tViewModel)
                     }
                 }
             }
@@ -138,8 +127,7 @@ enum class AppDestinations(
     val label: String,
     val icon: ImageVector,
 ) {
-    HOME("Home", Icons.Default.Add),
-    EXTRATO("Extrato", Icons.Default.DateRange),
+    HOME("Adicionar", Icons.Default.Add),
     GRAFICOS("Gráficos", Icons.Default.Info),
-    GESTAO("Gestão", Icons.Default.AccountBox),
+    EXTRATO("Extrato", Icons.Default.DateRange),
 }

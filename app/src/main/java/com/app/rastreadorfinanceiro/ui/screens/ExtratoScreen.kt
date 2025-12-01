@@ -4,9 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -144,6 +146,8 @@ fun TransactionItem(transaction: TransactionModel, onDelete: () -> Unit) {
     val color = if (isExpense) ErrorRed else SuccessGreen
     val amountPrefix = if (isExpense) "-" else "+"
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    val categoryIcon = if (isExpense) (transaction as ExpenseModel).category.icon else Icons.Default.KeyboardArrowUp
+    val categoryColor = if (isExpense) (transaction as ExpenseModel).category.color else SuccessGreen
 
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
@@ -155,20 +159,40 @@ fun TransactionItem(transaction: TransactionModel, onDelete: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
-                Text(
-                    text = transaction.description,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = TextPrimary,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 16.sp
-                )
-                Text(
-                    text = transaction.date.format(formatter),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = TextSecondary,
-                    fontSize = 14.sp
-                )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(categoryColor.copy(alpha = 0.2f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = categoryIcon,
+                        contentDescription = null,
+                        tint = categoryColor,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Text(
+                        text = transaction.description,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = TextPrimary,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 16.sp
+                    )
+                    Text(
+                        text = transaction.date.format(formatter),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextSecondary,
+                        fontSize = 14.sp
+                    )
+                }
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(

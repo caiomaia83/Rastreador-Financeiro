@@ -99,8 +99,8 @@ fun GestaoScreen(categoryViewModel: CategoryViewModel) {
         CategoryFormDialog(
             title = "Nova Categoria",
             onDismiss = { showAddDialog = false },
-            onConfirm = { name, color, limit ->
-                categoryViewModel.addCategory(name, color, limit)
+            onConfirm = { name, color, limit, icon ->
+                categoryViewModel.addCategory(name, color, limit, icon)
                 showAddDialog = false
             }
         )
@@ -114,11 +114,12 @@ fun GestaoScreen(categoryViewModel: CategoryViewModel) {
             initialColor = categoryToEdit!!.color,
             initialLimit = categoryToEdit!!.budgetLimit,
             onDismiss = { categoryToEdit = null },
-            onConfirm = { name, color, limit ->
+            onConfirm = { name, color, limit, icon ->
                 val updatedCategory = categoryToEdit!!.copy(
                     name = name,
                     color = color,
-                    budgetLimit = limit
+                    budgetLimit = limit,
+                    icon = icon
                 )
                 categoryViewModel.updateCategory(updatedCategory)
                 categoryToEdit = null

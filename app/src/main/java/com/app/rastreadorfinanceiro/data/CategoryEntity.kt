@@ -8,5 +8,6 @@ data class CategoryEntity(
     @PrimaryKey val id: String,
     val name: String,
     val colorArgb: Int,
-    val budgetLimit: Double? = null
+    val budgetLimit: Double? = null,
+    val iconName: String = "Add"
 )

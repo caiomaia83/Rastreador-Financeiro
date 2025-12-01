@@ -312,7 +312,7 @@ fun HomeScreen(
                 },
                 confirmButton = {
                     TextButton(onClick = {
-                        categoryViewModel.addCategory("Geral", Color.Gray)
+                        categoryViewModel.addCategory("Geral", Color.Gray, null, Icons.Default.Settings)
                         showExpenseDialog = false
                         selectedCategory = null
                     }) { Text("Criar Categoria 'Geral'") }
@@ -346,8 +346,8 @@ fun HomeScreen(
         CategoryFormDialog(
             title = "Nova Categoria",
             onDismiss = { showAddCategoryDialog = false },
-            onConfirm = { name, color, limit ->
-                categoryViewModel.addCategory(name, color, limit)
+            onConfirm = { name, color, limit, icon ->
+                categoryViewModel.addCategory(name, color, limit, icon)
                 showAddCategoryDialog = false
             }
         )
@@ -555,7 +555,7 @@ fun CategoryCard(
             modifier = Modifier.fillMaxSize()
         ) {
             Icon(
-                imageVector = getCategoryIcon(category.name),
+                imageVector = category.icon,
                 contentDescription = category.name,
                 tint = iconColor,
                 modifier = Modifier.size(24.dp)
@@ -626,7 +626,7 @@ fun RecentTransactionItem(
                 ) {
                     Icon(
                         imageVector = if (isExpense) {
-                            getCategoryIcon((transaction as ExpenseModel).category.name)
+                            (transaction as ExpenseModel).category.icon
                         } else {
                             Icons.Default.KeyboardArrowUp
                         },
